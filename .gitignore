@@ -1,0 +1,9 @@
+# Ignorar el dataset pesado
+*.zip
+
+# Ignorar cachés de Python
+__pycache__/
+*.pyc
+
+# Ignorar resultados automáticos si vuelves a correr entrenamientos
+runs/
