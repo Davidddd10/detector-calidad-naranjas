@@ -2,6 +2,8 @@
 
 Sistema de control de calidad visual basado en inteligencia artificial (YOLOv8) para clasificar frutas en tiempo real mediante cámara o imágenes estáticas.
 
+Este sistema fue desarrollado pensando en el entorno de un supermercado, donde el cliente puede acercarse, apuntar la cámara hacia las naranjas en exhibición y conocer al instante el estado de cada fruta. Sin necesidad de tocar ni revisar una por una, el sistema identifica visualmente cuáles están en buen estado para consumo y cuáles presentan algún defecto, ayudando a tomar una decisión de compra más informada, rápida y confiable.
+
 ---
 
 ## 📋 Requisitos previos
