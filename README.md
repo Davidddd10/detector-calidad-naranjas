@@ -91,7 +91,7 @@ pip list
 Con el entorno virtual aún activo, corre el script principal:
 
 ```bash
-python main.py
+python '.\26A IASC PF_DetectorDeCalidadDeNaranjas.py'
 ```
 
 La aplicación abrirá una ventana con el sistema de inspección listo para usar.
