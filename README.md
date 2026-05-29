@@ -121,25 +121,6 @@ deactivate
 
 ---
 
-## 🛠️ Solución de problemas comunes
-
-**Error: `No module named 'tkinter'`**
-> En Linux, tkinter no viene preinstalado. Instálalo con:
-> ```bash
-> sudo apt-get install python3-tk
-> ```
-
-**Error: `best.pt not found`**
-> Asegúrate de que el archivo `best.pt` esté en la **misma carpeta** que `main.py`.
-
-**La cámara no enciende**
-> Verifica que ninguna otra aplicación esté usando la cámara. También puedes cambiar el índice de cámara en el código (`cv2.VideoCapture(0)` → `cv2.VideoCapture(1)`).
-
-**Instalación lenta de `ultralytics`**
-> Es normal. Descarga PyTorch (~700 MB). Asegúrate de tener buena conexión a internet.
-
----
-
 ## 📁 Estructura final del proyecto
 
 ```
