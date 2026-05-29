@@ -18,13 +18,11 @@ def calcular_empalme(caja1, caja2):
 print("Cargando el motor de IA...")
 modelo = YOLO("best.pt")
 
-# Variables globales para el control del flujo
 camara = None
 modo_camara_activo = False
 
-# --- MOTOR PRINCIPAL DE PROCESAMIENTO (LÓGICA DE SEVERIDAD) ---
+# --- MOTOR PRINCIPAL DE PROCESAMIENTO ---
 def procesar_imagen(frame, es_video=False):
-    # Si es video de la cámara frontal, lo volteamos como espejo
     if es_video:
         frame = cv2.flip(frame, 1)
 
@@ -36,6 +34,14 @@ def procesar_imagen(frame, es_video=False):
             coords = list(map(int, caja.xyxy[0]))
             confianza = float(caja.conf[0])
             nombre_clase = modelo.names[int(caja.cls[0])]
+
+            # ==========================================
+            # FILTRO DE EMERGENCIA PARA LA DEMOSTRACIÓN
+            # ==========================================
+            if nombre_clase == "Inmadura" and confianza < 0.60:
+                continue  # Ignora la caja por completo y pasa a la siguiente
+            # ==========================================
+
             datos = {"coords": coords, "conf": confianza, "clase": nombre_clase}
             
             if nombre_clase == "Comestible": cajas_buenas.append(datos)
@@ -68,7 +74,6 @@ def procesar_imagen(frame, es_video=False):
 
 # --- FUNCIONES DE LA INTERFAZ ---
 def actualizar_visor(imagen_cv2):
-    # Ajustar el tamaño para que no rompa la ventana si subes una foto gigante
     imagen_cv2 = cv2.resize(imagen_cv2, (640, 480))
     imagen_rgb = cv2.cvtColor(imagen_cv2, cv2.COLOR_BGR2RGB)
     img_pil = Image.fromarray(imagen_rgb)
@@ -104,23 +109,13 @@ def detener_camara():
         camara = None
 
 def cargar_imagen():
-    # Primero apagamos la cámara si está encendida
     detener_camara()
-    
-    # Abrimos el explorador de archivos
-    ruta = filedialog.askopenfilename(
-        title="Selecciona una imagen de naranjas",
-        filetypes=[("Imágenes", "*.jpg *.jpeg *.png")]
-    )
-    
+    ruta = filedialog.askopenfilename(title="Selecciona una imagen de naranjas", filetypes=[("Imágenes", "*.jpg *.jpeg *.png")])
     if ruta:
         imagen = cv2.imread(ruta)
         if imagen is not None:
-            # Procesamos la imagen de golpe
             img_procesada, sanas, alertas = procesar_imagen(imagen, es_video=False)
             actualizar_visor(img_procesada)
-            
-            # Actualizamos contadores
             lbl_sanas.config(text=str(sanas))
             lbl_alertas.config(text=str(alertas))
 
@@ -132,28 +127,25 @@ def salir():
 ventana = tk.Tk()
 ventana.title("Sistema de Control de Calidad")
 ventana.geometry("900x550")
-ventana.configure(bg="#2B2B2B") # Fondo general oscuro suave
+ventana.configure(bg="#2B2B2B")
 
 fuente_titulos = font.Font(family="Segoe UI", size=14, weight="bold")
 fuente_numeros = font.Font(family="Segoe UI", size=28, weight="bold")
 fuente_botones = font.Font(family="Segoe UI", size=11, weight="bold")
 
-# Panel Izquierdo (Menú Lateral)
 panel_lateral = tk.Frame(ventana, bg="#1E1E1E", width=250)
 panel_lateral.pack(side="left", fill="y")
-panel_lateral.pack_propagate(False) # Evita que se encoja
+panel_lateral.pack_propagate(False)
 
 lbl_logo = tk.Label(panel_lateral, text="🔍 INSPECCIÓN\nITLag", fg="#FFFFFF", bg="#1E1E1E", font=fuente_titulos)
 lbl_logo.pack(pady=30)
 
-# Botones de Control
 btn_imagen = tk.Button(panel_lateral, text="📁 Cargar Imagen", bg="#3498DB", fg="white", font=fuente_botones, relief="flat", command=cargar_imagen)
 btn_imagen.pack(fill="x", padx=20, pady=10, ipady=5)
 
 btn_camara = tk.Button(panel_lateral, text="📷 Activar Cámara", bg="#9B59B6", fg="white", font=fuente_botones, relief="flat", command=encender_camara)
 btn_camara.pack(fill="x", padx=20, pady=10, ipady=5)
 
-# Contadores en el panel lateral
 lbl_tit_sanas = tk.Label(panel_lateral, text="COMESTIBLES", fg="#2ECC71", bg="#1E1E1E", font=("Segoe UI", 10, "bold"))
 lbl_tit_sanas.pack(pady=(30, 0))
 lbl_sanas = tk.Label(panel_lateral, text="-", fg="#2ECC71", bg="#1E1E1E", font=fuente_numeros)
@@ -167,11 +159,9 @@ lbl_alertas.pack()
 btn_salir = tk.Button(panel_lateral, text="Salir", bg="#E74C3C", fg="white", font=fuente_botones, relief="flat", command=salir)
 btn_salir.pack(side="bottom", fill="x", padx=20, pady=20, ipady=5)
 
-# Panel Derecho (Visor Principal)
 panel_principal = tk.Frame(ventana, bg="#2B2B2B")
 panel_principal.pack(side="right", expand=True, fill="both")
 
-# Etiqueta donde se mostrará la imagen o el video
 lbl_visor = tk.Label(panel_principal, bg="#000000", text="Esperando entrada de imagen/video...", fg="#7F8C8D", font=("Segoe UI", 12))
 lbl_visor.pack(expand=True)
 
